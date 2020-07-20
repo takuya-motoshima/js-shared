@@ -426,7 +426,7 @@ Template.compile('{{moment d startof="year"}}')({ d: '7/21/2020' });// 2020-01-0
 Template.compile('{{moment d endof="year"}}')({ d: '7/21/2020' });// 2020-12-31T23:59:59+09:00
 ```
 
-Date from now and specific dates.
+Date from now and specific dates.  
 If the current date and time is 2:00 am, July 20, 2020.
 
 ```js
@@ -438,16 +438,16 @@ Template.compile('{{moment d "from" dfrom}}')({ d: '7/21/2020 03:00:00', dfrom: 
 Date as calendar time
 
 ```js
-print(Template.compile('{{moment d "calendar"}}')({ d: '7/21/2020' }));// Tomorrow at 12:00 AM
+Template.compile('{{moment d "calendar"}}')({ d: '7/21/2020' });// Tomorrow at 12:00 AM
 ```
 
 Moment utils
 
 ```js
-print(Template.compile('{{moment d "daysinmonth"}}')({ d: '7/21/2020' }));// 31
-print(Template.compile('{{moment d "todate"}}')({ d: '7/21/2020' }));// Tue Jul 21 2020 00:00:00 GMT+0900 (日本標準時)
-print(Template.compile('{{moment d "array"}}')({ d: '7/21/2020' }));// 2020,6,21,0,0,0,0
-print(Template.compile('{{moment d "isostring"}}')({ d: '7/21/2020' }));// 2020-07-20T15:00:00.000Z
+Template.compile('{{moment d "daysinmonth"}}')({ d: '7/21/2020' });// 31
+Template.compile('{{moment d "todate"}}')({ d: '7/21/2020' });// Tue Jul 21 2020 00:00:00 GMT+0900 (日本標準時)
+Template.compile('{{moment d "array"}}')({ d: '7/21/2020' });// 2020,6,21,0,0,0,0
+Template.compile('{{moment d "isostring"}}')({ d: '7/21/2020' });// 2020-07-20T15:00:00.000Z
 ```
 
 ### Type utility.
