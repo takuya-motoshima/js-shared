@@ -31,6 +31,7 @@ export declare var devDependencies: {
     "@rollup/plugin-alias": string;
     "@rollup/plugin-replace": string;
     "@types/jest": string;
+    "@types/js-cookie": string;
     "fetch-mock": string;
     jest: string;
     json2module: string;
@@ -51,5 +52,6 @@ export declare var dependencies: {
     handlebars: string;
     "handlebars.moment": string;
     "helper-moment": string;
+    "js-cookie": string;
     moment: string;
 };

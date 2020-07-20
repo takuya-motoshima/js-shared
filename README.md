@@ -13,7 +13,7 @@ npm install js-shared;
 ### Detect browser.
 
 ```js
-import { Browser } from "js-shared";
+import { Browser } from 'js-shared';
 
 Browser.parse(navigator.userAgent);
   // {
@@ -29,7 +29,7 @@ Browser.parse(navigator.userAgent);
 Import.
 
 ```js
-import { Collection } from "js-shared";
+import { Collection } from 'js-shared';
 ```
 
 Remove duplicates from an array
@@ -53,7 +53,7 @@ The following color values ​​are various colors that adapt to changing acces
 Import.
 
 ```js
-import { Color } from "js-shared";
+import { Color } from 'js-shared';
 ```
 
 How to use colors.
@@ -70,7 +70,7 @@ Color.accessibleDarkBlue;// rgb(64,156,255)
 Import.
 
 ```js
-import { Date } from "js-shared";
+import { Date } from 'js-shared';
 ```
 
 Format current date
@@ -146,7 +146,7 @@ This will be explained later
 Import.
 
 ```js
-import { Misc } from "js-shared";
+import { Misc } from 'js-shared';
 ```
 
 Returns false if the operating environment is a browser and true if it is Node.js
@@ -166,7 +166,7 @@ Misc.getGlobal();
 Import.
 
 ```js
-import { Random } from "js-shared";
+import { Random } from 'js-shared';
 ```
 
 Returns a number from 3 to 9
@@ -206,7 +206,7 @@ A template language that can generate HTML markup with JS.
 Import.
 
 ```js
-import { Template } from "js-shared";
+import { Template } from 'js-shared';
 ```
 
 Basic Usage
@@ -457,7 +457,7 @@ Utility for type determination and type related processing.
 Import.
 
 ```js
-import { Types } from "js-shared";
+import { Types } from 'js-shared';
 ```
 
 Returns whether it is an Async function
@@ -468,4 +468,32 @@ function myFunction() {}
 
 Types.isAsync(myFunction);// false
 Types.isAsync(myAsyncFunction);// true
+```
+
+### Cookie utility.
+
+Utility for easy use of cookies.
+
+Import.
+
+```js
+import { Cookie } from 'js-shared';
+```
+
+Set cookie.
+
+```js
+Cookie.set('foo', 'bar');
+```
+
+Get cookie.
+
+```js
+Cookie.get('foo');// bar
+```
+
+Remove cookie.
+
+```js
+Cookie.remove('foo');
 ```

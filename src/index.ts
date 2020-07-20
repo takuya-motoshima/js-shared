@@ -11,6 +11,7 @@ import Color from '~/Color';
 import IDimensions from '~/interfaces/IDimensions';
 import ICoordinate from '~/interfaces/ICoordinate';
 import IRect from '~/interfaces/IRect';
+import Cookie from '~/Cookie';
 
 export {
   version,
@@ -25,5 +26,6 @@ export {
   Color,
   IDimensions,
   ICoordinate,
-  IRect
+  IRect,
+  Cookie
 }

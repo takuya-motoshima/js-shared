@@ -11,4 +11,5 @@ import Color from '~/Color';
 import IDimensions from '~/interfaces/IDimensions';
 import ICoordinate from '~/interfaces/ICoordinate';
 import IRect from '~/interfaces/IRect';
-export { version, Misc, Graphics, Types, Browser, Date, Random, Collection, Template, Color, IDimensions, ICoordinate, IRect };
+import Cookie from '~/Cookie';
+export { version, Misc, Graphics, Types, Browser, Date, Random, Collection, Template, Color, IDimensions, ICoordinate, IRect, Cookie };
