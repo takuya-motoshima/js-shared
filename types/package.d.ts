@@ -53,5 +53,6 @@ export declare var dependencies: {
     "handlebars.moment": string;
     "helper-moment": string;
     "js-cookie": string;
+    jszip: string;
     moment: string;
 };

@@ -13,7 +13,8 @@ export default {
   plugins: [
     alias({
       entries: {
-        handlebars: 'handlebars/dist/handlebars.js'
+        handlebars: 'handlebars/dist/handlebars.js',
+        jszip: 'jszip/dist/jszip.min.js'
       }
     }),
     replace({

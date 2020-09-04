@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Graphic module example</title>
+</head>
+<body>
+
+  <p>Blue rectangle draws only lines<p>
+  <p>Gold rectangle is filled and drawn</p>
+
+  <canvas id="myCanvas" width=300 height=200 style="border: 1px solid #d3d3d3;"></canvas>
+
+  <script type="module">
+
+    import { Graphics } from '../dist/build.esm.js';
+
+    const canvas = document.querySelector('#myCanvas');
+
+    const x = 50;
+    const y = 80;
+    const width = 100;
+    const height = 20;
+
+    // Draw only rectangular lines。
+    Graphics.drawRectangle(canvas, x, y, width, height, {
+      lineColor: 'blue'
+    });
+
+    // Fill the rectangle.
+    Graphics.drawRectangle(canvas, x, y, width, height, {
+      fill: 'gold',
+      degree: 45,
+      lineWidth: 0
+    });
+  </script>
+</body>
+</html>

@@ -40,13 +40,8 @@ export default class {
    * @return {boolean}
    */
   public static isMediaLoaded(media: HTMLImageElement|HTMLVideoElement): boolean {
-    if (media instanceof HTMLImageElement) {
-      return media.complete;
-    } else if (media instanceof HTMLVideoElement) {
-      return media.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
-    } else {
-      throw new Error('Invalid argument element');
-    }
+    if (!(media instanceof HTMLImageElement) && !(media instanceof HTMLVideoElement)) throw new Error('Invalid argument element');
+    return media instanceof HTMLImageElement ? media.complete : media.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
   }
 
   /**
@@ -71,15 +66,11 @@ export default class {
   public static awaitMediaLoaded(media: HTMLImageElement|HTMLVideoElement): Promise<Event> {
     return new Promise((resolve, reject) => {
       media.addEventListener('load', (event: Event) => {
-        if (!event.currentTarget) {
-          return;
-        }
+        if (!event.currentTarget) return;
         resolve(event)
       }, { once: true });
       media.addEventListener('error', (event: Event) => {
-        if (!event.currentTarget) {
-          return
-        }
+        if (!event.currentTarget) return
         reject(event)
       }, { once: true });
     })
@@ -96,24 +87,29 @@ export default class {
    * @return {ICoordinate[]}
    */
   public static getRotatedRectCoordinates(x: number, y: number, width: number, height: number, degree: number = 0): ICoordinate[] {
-    let corner1;// Upper left corner
-    let corner2;// Upper right corner
-    let corner3;// Lower right corner
-    let corner4;// Lower left corner
+    let topLeft;
+    let topRight;
+    let bottomRight;
+    let bottomLeft;
     if (degree !== 0) {
       const x2 = x + width / 2;
       const y2 = y + height / 2;
-      corner1 = this.getRotationCoordinate(x, y, x2, y2, degree);
-      corner2 = this.getRotationCoordinate(x + width, y, x2, y2, degree);
-      corner3 = this.getRotationCoordinate(x + width, y + height, x2, y2, degree);
-      corner4 = this.getRotationCoordinate(x, y + height, x2, y2, degree);
+      topLeft = this.getRotationCoordinate(x, y, x2, y2, degree);
+      topRight = this.getRotationCoordinate(x + width, y, x2, y2, degree);
+      bottomRight = this.getRotationCoordinate(x + width, y + height, x2, y2, degree);
+      bottomLeft = this.getRotationCoordinate(x, y + height, x2, y2, degree);
     } else {
-      corner1 = { x, y };
-      corner2 = { x: x + width, y };
-      corner3 = { x: x + width, y: y + height };
-      corner4 = { x, y: y + height };
+      topLeft = { x, y };
+      topRight = { x: x + width, y };
+      bottomRight = { x: x + width, y: y + height };
+      bottomLeft = { x, y: y + height };
     }
-    return [ corner1, corner2, corner3, corner4 ];
+    return [
+      topLeft,
+      topRight,
+      bottomRight,
+      bottomLeft
+    ];
   }
 
   /**
@@ -167,9 +163,7 @@ export default class {
     const degree = radian * 180 / Math.PI;
     // const radian = Math.atan2(x2 - x1, y2 - y1);
     // let  degree = radian * 360 / (2 * Math.PI);
-    // if (degree < 0) {
-    //   degree += 360;
-    // }
+    // if (degree < 0) degree += 360;
     return degree;
   }
 
@@ -194,51 +188,46 @@ export default class {
    * @return {IRect}
    */
   public static getOverlayRect(container: HTMLElement, media: HTMLImageElement|HTMLVideoElement): IRect {
-    const {
-      width: intrinsicWidth,
-      height: intrinsicHeight
-    } = this.getMediaDimensions(media);
-    const objectFit = getComputedStyle(media).getPropertyValue('object-fit');
-    const visibleStyle = getComputedStyle(container);
+    const { width: rawWidth, height: rawHeight } = this.getMediaDimensions(media);
+    const fit = getComputedStyle(media).getPropertyValue('object-fit');
+    const style = getComputedStyle(container);
     const visibleWidth =
-      parseFloat(visibleStyle.getPropertyValue('width')) -
-      parseFloat(visibleStyle.getPropertyValue('padding-right')) -
-      parseFloat(visibleStyle.getPropertyValue('border-right-width')) -
-      parseFloat(visibleStyle.getPropertyValue('padding-left')) -
-      parseFloat(visibleStyle.getPropertyValue('border-left-width'));
+      parseFloat(style.getPropertyValue('width')) -
+      parseFloat(style.getPropertyValue('padding-right')) -
+      parseFloat(style.getPropertyValue('border-right-width')) -
+      parseFloat(style.getPropertyValue('padding-left')) -
+      parseFloat(style.getPropertyValue('border-left-width'));
     const visibleHeight =
-      parseFloat(visibleStyle.getPropertyValue('height')) -
-      parseFloat(visibleStyle.getPropertyValue('padding-top')) -
-      parseFloat(visibleStyle.getPropertyValue('border-top-width')) -
-      parseFloat(visibleStyle.getPropertyValue('padding-bottom')) -
-      parseFloat(visibleStyle.getPropertyValue('border-bottom-width'));
-    const visibleTop =
-      parseFloat(visibleStyle.getPropertyValue('padding-top')) +
-      parseFloat(visibleStyle.getPropertyValue('border-top-width')) +
-      parseFloat(visibleStyle.getPropertyValue('margin-top'));
-    const visibleLeft =
-      parseFloat(visibleStyle.getPropertyValue('padding-left')) +
-      parseFloat(visibleStyle.getPropertyValue('border-left-width')) +
-      parseFloat(visibleStyle.getPropertyValue('margin-left'));
+      parseFloat(style.getPropertyValue('height')) -
+      parseFloat(style.getPropertyValue('padding-top')) -
+      parseFloat(style.getPropertyValue('border-top-width')) -
+      parseFloat(style.getPropertyValue('padding-bottom')) -
+      parseFloat(style.getPropertyValue('border-bottom-width'));
+    const visibleY =
+      parseFloat(style.getPropertyValue('padding-top')) +
+      parseFloat(style.getPropertyValue('border-top-width')) +
+      parseFloat(style.getPropertyValue('margin-top'));
+    const visibleX =
+      parseFloat(style.getPropertyValue('padding-left')) +
+      parseFloat(style.getPropertyValue('border-left-width')) +
+      parseFloat(style.getPropertyValue('margin-left'));
 
-    if (/^(contain|cover|scale-down)$/.test(objectFit)) {
-      const horizontalRatio = visibleWidth / intrinsicWidth;
-      const verticalRatio = visibleHeight / intrinsicHeight;
-      const ratio = /^(contain|scale-down)$/.test(objectFit) 
-        ? Math.min(horizontalRatio, verticalRatio)
-        : Math.max(horizontalRatio, verticalRatio);
-      const cx = ( visibleWidth - intrinsicWidth * ratio ) / 2;
-      const cy = ( visibleHeight - intrinsicHeight * ratio ) / 2;
+    if (/^(contain|cover|scale-down)$/.test(fit)) {
+      const hRatio = visibleWidth / rawWidth;
+      const vRatio = visibleHeight / rawHeight;
+      const ratio = /^(contain|scale-down)$/.test(fit) ? Math.min(hRatio, vRatio) : Math.max(hRatio, vRatio);
+      const cx = ( visibleWidth - rawWidth * ratio ) / 2;
+      const cy = ( visibleHeight - rawHeight * ratio ) / 2;
       return {
-        x: visibleLeft + cx,
-        y: visibleTop + cy,
-        width: intrinsicWidth * ratio,
-        height: intrinsicHeight * ratio
+        x: visibleX + cx,
+        y: visibleY + cy,
+        width: rawWidth * ratio,
+        height: rawHeight * ratio
       };
     } else {
       return {
-        x: visibleLeft,
-        y: visibleTop,
+        x: visibleX,
+        y: visibleY,
         width: visibleWidth,
         height: visibleHeight
       };
@@ -260,18 +249,15 @@ export default class {
    *          destinationHeight : The percentage of the printFrame height on which the image will be printed, relative to the printFrame height.
    */
   public static getRenderedRect(media: HTMLImageElement|HTMLVideoElement): IRect {
-    const objectFit = getComputedStyle(media).getPropertyValue('object-fit');
+    const fit = getComputedStyle(media).getPropertyValue('object-fit');
     const position = getComputedStyle(media).getPropertyValue('object-position').split(' ');
-    const {
-      width: intrinsicWidth,
-      height: intrinsicHeight
-    } = this.getMediaDimensions(media);
-    const intrinsicRatio = intrinsicWidth / intrinsicHeight;
+    const { width: rawWidth, height: rawHeight } = this.getMediaDimensions(media);
+    const rawRatio = rawWidth / rawHeight;
     const visibleWidth = media.clientWidth;
     const visibleHeight = media.clientHeight;
     const visibleRatio = visibleWidth / visibleHeight;
-    const horizontalPercentage = parseInt(position[0]) / 100;
-    const verticalPercentage = parseInt(position[1]) / 100;
+    const hPercentage = parseInt(position[0]) / 100;
+    const vPercentage = parseInt(position[1]) / 100;
     let width = 0;
     let height = 0;
     let x = 0;
@@ -280,37 +266,37 @@ export default class {
     let destinationHeight = 1;
     let destinationX = 0;
     let destinationY = 0;
-    if (objectFit === 'none') {
+    if (fit === 'none') {
       width = visibleWidth;
       height = visibleHeight;
-      x = (intrinsicWidth - visibleWidth) * horizontalPercentage;
-      y = (intrinsicHeight - visibleHeight) * verticalPercentage;
-    } else if (objectFit === 'contain' || objectFit === 'scale-down') {
+      x = (rawWidth - visibleWidth) * hPercentage;
+      y = (rawHeight - visibleHeight) * vPercentage;
+    } else if (fit === 'contain' || fit === 'scale-down') {
       // TODO: handle the 'scale-down' appropriately, once its meaning will be clear
-      width = intrinsicWidth;
-      height = intrinsicHeight;
-      if (intrinsicRatio > visibleRatio) {
-        destinationHeight = (intrinsicHeight / visibleHeight) / (intrinsicWidth / visibleWidth);
-        destinationY = (1 - destinationHeight) * verticalPercentage;
+      width = rawWidth;
+      height = rawHeight;
+      if (rawRatio > visibleRatio) {
+        destinationHeight = (rawHeight / visibleHeight) / (rawWidth / visibleWidth);
+        destinationY = (1 - destinationHeight) * vPercentage;
       } else {
-        destinationWidth = (intrinsicWidth / visibleWidth) / (intrinsicHeight / visibleHeight);
-        destinationX = (1 - destinationWidth) * horizontalPercentage;
+        destinationWidth = (rawWidth / visibleWidth) / (rawHeight / visibleHeight);
+        destinationX = (1 - destinationWidth) * hPercentage;
       }
-    } else if (objectFit === 'cover') {
-      if (intrinsicRatio > visibleRatio) {
-        width = intrinsicHeight * visibleRatio;
-        height = intrinsicHeight;
-        x = (intrinsicWidth - width) * horizontalPercentage;
+    } else if (fit === 'cover') {
+      if (rawRatio > visibleRatio) {
+        width = rawHeight * visibleRatio;
+        height = rawHeight;
+        x = (rawWidth - width) * hPercentage;
       } else {
-        width = intrinsicWidth;
-        height = intrinsicWidth / visibleRatio;
-        y = (intrinsicHeight - height) * verticalPercentage;
+        width = rawWidth;
+        height = rawWidth / visibleRatio;
+        y = (rawHeight - height) * vPercentage;
       }
-    } else if (objectFit === 'fill') {
-      width = intrinsicWidth;
-      height = intrinsicHeight;
+    } else if (fit === 'fill') {
+      width = rawWidth;
+      height = rawHeight;
     } else {
-      console.error(`Unexpected object-fit attribute with value ${objectFit} relative to`);
+      console.error(`Unexpected object-fit attribute with value ${fit} relative to`);
     }
     return {
       x,
@@ -335,11 +321,11 @@ export default class {
    * @return {void}
    */
   public static drawPoint(canvas: HTMLCanvasElement, x: number, y: number, { radius = 3, color = Color.accessibleBlue }: { radius?: number, color?: string } = {}): void {
-    const context = canvas.getContext('2d')!;
-    context.beginPath();
-    context.arc(x, y, radius, 0, 2 * Math.PI);
-    context.fillStyle = color;
-    context.fill();
+    const ctx = canvas.getContext('2d')!;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
   }
 
   /**
@@ -382,32 +368,38 @@ export default class {
       lineWidth = 2,
       lineColor = Color.accessibleBlue,
       shadowBlur = 0,
-      shadowColor = Color.accessibleBlue
+      shadowColor = Color.accessibleBlue,
+      fill = undefined
     }: {
       degree?: number,
       lineWidth?: number,
       lineColor?: string,
       shadowBlur?: number,
-      shadowColor?: string
+      shadowColor?: string,
+      fill?: string
     } = {}
   ): void {
     const corners = this.getRotatedRectCoordinates(x, y, width, height, degree);
-    const context = canvas.getContext('2d')!;
-    context.strokeStyle = lineColor;
-    context.lineWidth = lineWidth;
+    const ctx = canvas.getContext('2d')!;
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = lineWidth ? lineColor : 'transparent';
     if (shadowBlur) {
-      context.shadowOffsetX = 0;
-      context.shadowOffsetY = 0;
-      context.shadowBlur = shadowBlur;
-      context.shadowColor = shadowColor;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = shadowBlur;
+      ctx.shadowColor = shadowColor;
     }
-    context.beginPath();
-    context.moveTo(corners[0].x, corners[0].y);
-    context.lineTo(corners[1].x, corners[1].y);
-    context.lineTo(corners[2].x, corners[2].y);
-    context.lineTo(corners[3].x, corners[3].y);
-    context.closePath();
-    context.stroke();
+    ctx.beginPath();
+    ctx.moveTo(corners[0].x, corners[0].y);
+    ctx.lineTo(corners[1].x, corners[1].y);
+    ctx.lineTo(corners[2].x, corners[2].y);
+    ctx.lineTo(corners[3].x, corners[3].y);
+    ctx.closePath();
+    ctx.stroke();
+    if (fill) {
+      ctx.fillStyle = fill;
+      ctx.fill();
+    }
   }
 
   /**
@@ -442,30 +434,32 @@ export default class {
       shadowColor?: string
     } = {}
   ): void {
-    const context = canvas.getContext('2d')!;
-    context.strokeStyle = lineColor;
-    context.lineWidth = lineWidth;
+    const ctx = canvas.getContext('2d')!;
+    if (lineWidth) {
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth = lineWidth;
+    }
     if (shadowBlur) {
-      context.shadowOffsetX = 0;
-      context.shadowOffsetY = 0;
-      context.shadowBlur = shadowBlur;
-      context.shadowColor = shadowColor;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = shadowBlur;
+      ctx.shadowColor = shadowColor;
     }
     const corner = Math.min(width, height) / 4;
-    context.beginPath();
-    context.moveTo(x, y + corner);
-    context.lineTo(x, y);
-    context.lineTo(x + corner, y);
-    context.moveTo(x + width - corner, y);
-    context.lineTo(x + width, y);
-    context.lineTo(x + width , y + corner);
-    context.moveTo(x, y + height - corner);
-    context.lineTo(x, y + height);
-    context.lineTo(x + corner, y + height);
-    context.moveTo(x + width - corner, y + height);
-    context.lineTo(x + width, y + height);
-    context.lineTo(x + width, y + height - corner);
-    context.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y + corner);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x + corner, y);
+    ctx.moveTo(x + width - corner, y);
+    ctx.lineTo(x + width, y);
+    ctx.lineTo(x + width , y + corner);
+    ctx.moveTo(x, y + height - corner);
+    ctx.lineTo(x, y + height);
+    ctx.lineTo(x + corner, y + height);
+    ctx.moveTo(x + width - corner, y + height);
+    ctx.lineTo(x + width, y + height);
+    ctx.lineTo(x + width, y + height - corner);
+    ctx.stroke();
   }
 
   /**
@@ -474,8 +468,8 @@ export default class {
    * @return {void}
    */
   public static clearCanvas(canvas: HTMLCanvasElement): void {
-    const context = canvas.getContext('2d')!;
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    const ctx = canvas.getContext('2d')!;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
   /**
@@ -485,8 +479,8 @@ export default class {
    * @return {void}
    */
   public static flipHorizontal(canvas: HTMLCanvasElement): void {
-    const context = canvas.getContext('2d')!;
-    const data = context.getImageData(0,0, canvas.width, canvas.height);
+    const ctx = canvas.getContext('2d')!;
+    const data = ctx.getImageData(0,0, canvas.width, canvas.height);
     // Traverse every row and flip the pixels
     for (let i=0; i<data.height; i++) {
      // We only need to do half of every row since we're flipping the halves
@@ -500,6 +494,6 @@ export default class {
         }
       }
     }
-    context.putImageData(data, 0, 0, 0, 0, data.width, data.height);
+    ctx.putImageData(data, 0, 0, 0, 0, data.width, data.height);
   }
 }

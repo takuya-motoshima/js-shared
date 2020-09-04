@@ -147,12 +147,13 @@ export default class {
      * @param  {string} options.shadowColor
      * @return {void}
      */
-    static drawRectangle(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, { degree, lineWidth, lineColor, shadowBlur, shadowColor }?: {
+    static drawRectangle(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, { degree, lineWidth, lineColor, shadowBlur, shadowColor, fill }?: {
         degree?: number;
         lineWidth?: number;
         lineColor?: string;
         shadowBlur?: number;
         shadowColor?: string;
+        fill?: string;
     }): void;
     /**
      * Draw rectangle corners
