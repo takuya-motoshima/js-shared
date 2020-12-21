@@ -12,6 +12,7 @@ import IDimensions from '~/interfaces/IDimensions';
 import ICoordinate from '~/interfaces/ICoordinate';
 import IRect from '~/interfaces/IRect';
 import Cookie from '~/Cookie';
+import Clipboard from '~/Clipboard';
 
 export {
   version,
@@ -27,5 +28,6 @@ export {
   IDimensions,
   ICoordinate,
   IRect,
-  Cookie
+  Cookie,
+  Clipboard
 }

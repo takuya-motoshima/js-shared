@@ -12,4 +12,5 @@ import IDimensions from '~/interfaces/IDimensions';
 import ICoordinate from '~/interfaces/ICoordinate';
 import IRect from '~/interfaces/IRect';
 import Cookie from '~/Cookie';
-export { version, Misc, Graphics, Types, Browser, Date, Random, Collection, Template, Color, IDimensions, ICoordinate, IRect, Cookie };
+import Clipboard from '~/Clipboard';
+export { version, Misc, Graphics, Types, Browser, Date, Random, Collection, Template, Color, IDimensions, ICoordinate, IRect, Cookie, Clipboard };

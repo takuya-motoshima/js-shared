@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.4] - 2020-12-21
+
+- Added a module to operate the clipboard.
+
+    ```js
+    import { Clipboard } from 'js-shared';
+
+    // Save the string to the clipboard.
+    await Clipboard.save('Hello, World!');
+    ````
+
 ## [1.0.3] - 2020-09-04
 
 - Add fill option to rectangle drawing method of Graphics module

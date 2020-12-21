@@ -1,5 +1,5 @@
 export var name = "js-shared";
-export var version = "1.0.2";
+export var version = "1.0.3";
 export var description = "This is a general utility class and function package.";
 export var main = "dist/build.common.js";
 export var module = "dist/build.esm.js";
@@ -14,4 +14,4 @@ export var license = "MIT";
 export var bugs = {"url":"https://github.com/takuya-motoshima/js-shared/issues","email":"developer.takuyamotoshima@gmail.com"};
 export var homepage = "https://github.com/takuya-motoshima/js-shared#readme";
 export var devDependencies = {"@rollup/plugin-alias":"^3.0.1","@rollup/plugin-replace":"^2.3.1","@types/jest":"^24.0.23","@types/js-cookie":"^2.2.6","fetch-mock":"^8.0.0","jest":"^24.9.0","json2module":"0.0.3","rollup":"^1.27.2","rollup-plugin-commonjs":"^10.1.0","rollup-plugin-json":"^4.0.0","rollup-plugin-node-resolve":"^5.2.0","rollup-plugin-terser":"^5.3.0","rollup-plugin-typescript2":"^0.25.2","ts-jest":"^24.1.0","ts-node":"^8.5.2","tsconfig-paths":"^3.9.0","typescript":"^3.7.2"};
-export var dependencies = {"bootstrap":"^4.4.1","bowser":"^2.9.0","handlebars":"^4.7.3","handlebars.moment":"^1.0.4","helper-moment":"^0.2.0","js-cookie":"^2.2.1","jszip":"^3.5.0","moment":"^2.24.0"};
+export var dependencies = {"bowser":"^2.9.0","clipboard-polyfill":"^3.0.1","handlebars":"^4.7.3","handlebars.moment":"^1.0.4","helper-moment":"^0.2.0","js-cookie":"^2.2.1","jszip":"^3.5.0","moment":"^2.24.0"};

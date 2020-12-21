@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Clipboard example.</title>
+</head>
+<body>
+
+  <input id="text" type="text" value="Hello, World!">
+  <button type="button" id="copy">Clipboard</button>
+
+  <script type="module">
+    import { Clipboard } from '../dist/build.esm.js';
+
+    // Save the text to the clipboard when you press the copy button.
+    document.querySelector('#copy').addEventListener('click', event => {
+      // Input string.
+      const text = document.querySelector('#text').value;
+
+      // Save to clipboard.
+      Clipboard.save(text);
+      alert('Saved to clipboard.');
+    });
+  </script>
+</body>
+</html>

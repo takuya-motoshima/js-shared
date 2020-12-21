@@ -67,8 +67,8 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "bootstrap": "^4.4.1",
     "bowser": "^2.9.0",
+    "clipboard-polyfill": "^3.0.1",
     "handlebars": "^4.7.3",
     "handlebars.moment": "^1.0.4",
     "helper-moment": "^0.2.0",

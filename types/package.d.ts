@@ -47,8 +47,8 @@ export declare var devDependencies: {
     typescript: string;
 };
 export declare var dependencies: {
-    bootstrap: string;
     bowser: string;
+    "clipboard-polyfill": string;
     handlebars: string;
     "handlebars.moment": string;
     "helper-moment": string;
